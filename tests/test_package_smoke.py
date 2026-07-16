@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 
 PACKAGE = Path(__file__).resolve().parents[1]
 SCRIPTS = PACKAGE / "scripts"
@@ -28,6 +30,28 @@ def test_public_package_contract() -> None:
     assert package["architecture_inspiration"]["dependency"] is False
     assert package["architecture_inspiration"]["vendored_code"] is False
     run_script("validate_structure.py", "--package", str(PACKAGE))
+
+
+def test_public_yaml_has_unique_keys() -> None:
+    class UniqueKeyLoader(yaml.SafeLoader):
+        pass
+
+    def construct_mapping(loader: UniqueKeyLoader, node: yaml.MappingNode, deep: bool = False) -> dict:
+        mapping: dict = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            assert key not in mapping, f"Duplicate YAML key {key!r} at line {key_node.start_mark.line + 1}"
+            mapping[key] = loader.construct_object(value_node, deep=deep)
+        return mapping
+
+    UniqueKeyLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        construct_mapping,
+    )
+    yaml_files = sorted((PACKAGE / ".github").rglob("*.yml"))
+    yaml_files += [PACKAGE / "CITATION.cff", PACKAGE / "examples" / "minimal-app" / "manifest.yaml"]
+    for path in yaml_files:
+        yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeyLoader)
 
 
 def test_synthetic_module_aware_pipeline(tmp_path: Path) -> None:
