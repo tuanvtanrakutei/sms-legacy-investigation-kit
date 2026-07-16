@@ -10,6 +10,10 @@ All notable changes to this project are documented in this file. The format foll
 - ADP extraction validation on a compatible legacy Access environment.
 - A01 regression trial only after explicit authorization.
 
+### Documentation
+
+- Reframed the README around the kit's purpose, boundaries, per-app operating model, and input-to-output flow.
+
 ## [2.1.4] - 2026-07-16
 
 ### Changed
