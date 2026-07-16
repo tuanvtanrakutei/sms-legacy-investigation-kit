@@ -30,6 +30,12 @@ All notable changes to this project are documented in this file. The format foll
 
 - Renamed the Codex/Claude skill identifier from `$sms-legacy-investigation-kit` to the shorter `$sms-kit`; the repository and package name remain unchanged.
 
+## [2.1.7] - 2026-07-16
+
+### Added
+
+- Added a documented shorthand command guide for the agent skill: `help`, `init`, `assess`, `phase`, `run`, `status`, and `render`.
+
 ## [2.1.4] - 2026-07-16
 
 ### Changed

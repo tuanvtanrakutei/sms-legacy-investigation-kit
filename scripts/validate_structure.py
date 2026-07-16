@@ -162,7 +162,7 @@ def main() -> int:
             errors.append("SKILL.md frontmatter is missing or incorrect")
         if len(skill.splitlines()) > 500:
             errors.append("SKILL.md exceeds 500 lines")
-        for phrase in ("multi-agent", "coordinator", "independent QA", "scripts/create_run.py", "Access extraction", "leaf-first", "CodeWiki is not a dependency"):
+        for phrase in ("multi-agent", "coordinator", "independent QA", "scripts/create_run.py", "Access extraction", "leaf-first", "CodeWiki is not a dependency", "$sms-kit help", "$sms-kit init <APP_ID>", "$sms-kit render <APP_ID> [LANGUAGE]"):
             if phrase not in skill:
                 errors.append(f"SKILL.md missing V2.1 term: {phrase}")
         if "TODO" in skill:
@@ -170,14 +170,14 @@ def main() -> int:
 
     package_data = load_json(root / "specifications/package.json", errors)
     if isinstance(package_data, dict):
-        if package_data.get("version") != "2.1.6" or package_data.get("contract_version") != "2.1":
-            errors.append("Package and contract versions must be 2.1.6 and 2.1")
+        if package_data.get("version") != "2.1.7" or package_data.get("contract_version") != "2.1":
+            errors.append("Package and contract versions must be 2.1.7 and 2.1")
         inspiration = package_data.get("architecture_inspiration", {})
         if not isinstance(inspiration, dict) or inspiration.get("dependency") is not False or inspiration.get("vendored_code") is not False:
             errors.append("CodeWiki reference must remain non-dependency and non-vendored")
 
     publication_checks = {
-        "README.md": ("SMS Legacy Investigation Kit", "2.1.6", "Apache License 2.0", "CodeWiki is not installed"),
+        "README.md": ("SMS Legacy Investigation Kit", "2.1.7", "Apache License 2.0", "CodeWiki is not installed"),
         "LICENSE": ("Apache License", "Version 2.0, January 2004"),
         "NOTICE": ("Copyright 2026 Vo Ta Tuan", "vo-ta-tuan@anrakutei.vn"),
         "SECURITY.md": ("vo-ta-tuan@anrakutei.vn", "Do not open a public GitHub issue"),

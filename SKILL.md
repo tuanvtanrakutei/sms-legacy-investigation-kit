@@ -7,6 +7,22 @@ description: Analyze Microsoft Access VBA applications and MDB/ACCDB/ADP project
 
 Use one shared investigation method while keeping every app's sources, graph, decisions, sessions, and outputs isolated.
 
+## Interpret the user command guide
+
+Treat these short forms as explicit user requests. They are agent commands, not shell commands.
+
+| User input | Required action |
+|---|---|
+| `$sms-kit help` | Return the command guide below and do not modify an app workspace. |
+| `$sms-kit init <APP_ID>` | Use app initialization mode; ask for or infer only the safe workspace/name details, run `scripts/sms_kit.py init`, then stop. |
+| `$sms-kit assess <APP_ID>` | Inspect the manifest and authorized source inventory; report coverage, gaps, and required approvals without analyzing a phase. |
+| `$sms-kit phase <1-6> <APP_ID>` | Run only the named phase after reading its required contract/template and available evidence. |
+| `$sms-kit run <APP_ID>` | Run the six phases in order only when the user explicitly authorizes the full investigation. |
+| `$sms-kit status <APP_ID>` | Report app/run/phase/QA status without changing evidence or outputs. |
+| `$sms-kit render <APP_ID> [LANGUAGE]` | Render declared outputs only after the required Phase 6, traceability, and QA gates pass. |
+
+Accept the equivalent Vietnamese or plain-language request. If an app ID is omitted, ask for it before any app-specific action. Never interpret `run` as approval for live Access/ADP or SQL Server access; require that approval separately.
+
 ## Select the operating mode
 
 1. Use **package mode** when asked to create, install, validate, or modify this kit. Do not analyze A01 or another app unless the user separately authorizes a trial.

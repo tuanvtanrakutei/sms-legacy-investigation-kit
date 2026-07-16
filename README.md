@@ -1,7 +1,7 @@
 # SMS Legacy Investigation Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.1.6-green.svg)](specifications/package.json)
+[![Version](https://img.shields.io/badge/version-2.1.7-green.svg)](specifications/package.json)
 
 ## What is this?
 
@@ -80,6 +80,22 @@ py -3.11 scripts/sms_kit.py preflight `
 
 Run `py -3.11 scripts/sms_kit.py --help` for the supported commands. The CLI is intentionally small; use the agent skill for extraction, phases, multi-agent orchestration, and rendering.
 
+### Agent command guide
+
+These are short messages to an agent after selecting the skill. They are not PowerShell commands.
+
+| What you want | Type this |
+|---|---|
+| See the guide | `$sms-kit help` |
+| Create an app workspace only | `$sms-kit init A03` |
+| Check source coverage and missing inputs | `$sms-kit assess A03` |
+| Run one phase | `$sms-kit phase 1 A03` |
+| Run the full six-phase investigation | `$sms-kit run A03` |
+| Check progress without changing anything | `$sms-kit status A03` |
+| Create approved final outputs | `$sms-kit render A03 English` |
+
+`run` means the six-phase analysis only. It does **not** authorize live Access/ADP extraction or live SQL Server access; approve those separately when needed.
+
 ## What it is not
 
 - Not a replacement-system implementation or code-migration framework.
@@ -126,7 +142,7 @@ This makes the kit compatible with Codex, Claude, and generic agents without all
 
 ## Current status and safety boundary
 
-Version 2.1.6 is packaged and synthetic-smoke-tested. Live Access/ADP extraction, live SQL Server access, and the A01 regression corpus are intentionally outside the public test baseline.
+Version 2.1.7 is packaged and synthetic-smoke-tested. Live Access/ADP extraction, live SQL Server access, and the A01 regression corpus are intentionally outside the public test baseline.
 
 - Never open the original Access database; executable extraction uses a hash-verified snapshot.
 - Never execute `command` or `arguments` values from `compile_commands.json`.
