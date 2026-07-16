@@ -10,6 +10,18 @@ All notable changes to this project are documented in this file. The format foll
 - ADP extraction validation on a compatible legacy Access environment.
 - A01 regression trial only after explicit authorization.
 
+## [2.1.1] - 2026-07-16
+
+### Fixed
+
+- Declared `requirements-dev.txt` as the dependency source for the GitHub Actions pip cache.
+- Rejected duplicate keys in public YAML metadata through the synthetic test suite.
+- Excluded virtual environments and generated dependency/cache directories from repository text-integrity scans.
+
+### Changed
+
+- Hardened the public release metadata and validation baseline without changing the 2.1 contract.
+
 ## [2.1.0] - 2026-07-15
 
 ### Added
