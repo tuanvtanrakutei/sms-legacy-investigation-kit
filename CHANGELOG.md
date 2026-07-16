@@ -24,6 +24,12 @@ All notable changes to this project are documented in this file. The format foll
 
 - Documented the recommended agent-skill entry point and a minimal CLI alternative before the detailed investigation workflow.
 
+## [2.1.6] - 2026-07-16
+
+### Changed
+
+- Renamed the Codex/Claude skill identifier from `$sms-legacy-investigation-kit` to the shorter `$sms-kit`; the repository and package name remain unchanged.
+
 ## [2.1.4] - 2026-07-16
 
 ### Changed

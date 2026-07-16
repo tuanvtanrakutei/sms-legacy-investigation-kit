@@ -1,7 +1,7 @@
 # SMS Legacy Investigation Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.1.5-green.svg)](specifications/package.json)
+[![Version](https://img.shields.io/badge/version-2.1.6-green.svg)](specifications/package.json)
 
 ## What is this?
 
@@ -42,17 +42,17 @@ Without a shared method, each agent may investigate a legacy app differently, mi
 
 This is the normal path for an investigation. Do **not** memorize the internal Python scripts or six-phase mechanics.
 
-In Codex, open `/skills`, select **SMS Legacy Investigation Kit**, then state the result you need. You can also mention the skill explicitly with `$sms-legacy-investigation-kit`.
+In Codex, open `/skills`, select **SMS Legacy Investigation Kit**, then state the result you need. You can also mention the skill explicitly with `$sms-kit`.
 
 ```text
-Use $sms-legacy-investigation-kit to initialize an isolated workspace for A03.
+Use $sms-kit to initialize an isolated workspace for A03.
 The legacy source is Access/VBA with SQL Server. Do not analyze it yet.
 ```
 
 For a real investigation, say what app and outcome you need:
 
 ```text
-Use $sms-legacy-investigation-kit to investigate app A03 from the authorized sources.
+Use $sms-kit to investigate app A03 from the authorized sources.
 Run the six phases, preserve evidence, and produce English Phase documents,
 an E2E Trace, a Boundary Map, and presentation inputs.
 ```
@@ -126,7 +126,7 @@ This makes the kit compatible with Codex, Claude, and generic agents without all
 
 ## Current status and safety boundary
 
-Version 2.1.5 is packaged and synthetic-smoke-tested. Live Access/ADP extraction, live SQL Server access, and the A01 regression corpus are intentionally outside the public test baseline.
+Version 2.1.6 is packaged and synthetic-smoke-tested. Live Access/ADP extraction, live SQL Server access, and the A01 regression corpus are intentionally outside the public test baseline.
 
 - Never open the original Access database; executable extraction uses a hash-verified snapshot.
 - Never execute `command` or `arguments` values from `compile_commands.json`.

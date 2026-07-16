@@ -25,7 +25,7 @@ def run(script: str, *args: str) -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=__doc__,
-        epilog="For full investigation work, invoke the sms-legacy-investigation-kit agent skill.",
+        epilog="For full investigation work, invoke the sms-kit agent skill.",
     )
     parser.add_argument("--version", action="version", version=package_version())
     commands = parser.add_subparsers(dest="command", required=True)
