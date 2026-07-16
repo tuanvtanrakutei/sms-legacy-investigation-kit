@@ -1,4 +1,8 @@
 # Changelog
+## 2.2.1 - 2026-07-16
+
+- Replace app-specific onboarding examples with reusable <APP_ID> placeholders.
+
 
 ## 2.2.0 - 2026-07-16
 

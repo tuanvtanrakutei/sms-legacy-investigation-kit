@@ -1,7 +1,7 @@
 # SMS Legacy Investigation Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.2.0-green.svg)](plugins/sms-kit/specifications/package.json)
+[![Version](https://img.shields.io/badge/version-2.2.1-green.svg)](plugins/sms-kit/specifications/package.json)
 
 An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server application, one app at a time. It turns authorized source material into the six analyst phases, evidence, E2E Trace, Boundary Map, QA report, and presentation inputs.
 
@@ -10,7 +10,7 @@ An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server ap
 You do **not** need to clone this repository or create a link in an agent folder. Add the public marketplace once, then install the plugin:
 
 ```powershell
-codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --ref v2.2.0 --sparse .agents/plugins --sparse plugins/sms-kit
+codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --ref v2.2.1 --sparse .agents/plugins --sparse plugins/sms-kit
 codex plugin add sms-kit@sms-legacy-kit
 ```
 
@@ -29,17 +29,17 @@ In Codex, select **SMS Legacy Investigation Kit** from `/skills`, or include `$s
 
 | Goal | Say this to the agent |
 |---|---|
-| Create an empty workspace | `$sms-kit init A03` |
-| Check sources and missing inputs | `$sms-kit assess A03` |
-| Run a specific phase | `$sms-kit phase 1 A03` |
-| Run the six phases | `$sms-kit run A03` |
-| View progress only | `$sms-kit status A03` |
-| Produce final approved outputs | `$sms-kit render A03 English` |
+| Create an empty workspace | `$sms-kit init <APP_ID>` |
+| Check sources and missing inputs | `$sms-kit assess <APP_ID>` |
+| Run a specific phase | `$sms-kit phase 1 <APP_ID>` |
+| Run the six phases | `$sms-kit run <APP_ID>` |
+| View progress only | `$sms-kit status <APP_ID>` |
+| Produce final approved outputs | `$sms-kit render <APP_ID> English` |
 
 Example:
 
 ```text
-Use $sms-kit to investigate A03 from the authorized sources.
+Use $sms-kit to investigate <APP_ID> from the authorized sources.
 Run the six phases and produce English Phase documents, an E2E Trace,
 a Boundary Map, a QA report, and presentation inputs.
 ```
@@ -48,20 +48,20 @@ a Boundary Map, a QA report, and presentation inputs.
 
 ## Set up one app workspace
 
-Ask the agent for `$sms-kit init A03`, or use the optional CLI if no agent is involved:
+Ask the agent for `$sms-kit init <APP_ID>`, or use the optional CLI if no agent is involved:
 
 ```powershell
 py -3.11 plugins\sms-kit\scripts\sms_kit.py init `
-  --root D:\investigations `
-  --app-id A03 `
-  --name-en "A03 Legacy Application"
+  --root <WORKSPACE_ROOT> `
+  --app-id <APP_ID> `
+  --name-en "<APP_NAME>"
 ```
 
-Put A03's authorized exports and documents in that workspace. Each application has its own sources, evidence, graph, decisions, runs, and outputs; the installed plugin remains shared.
+Put the application's authorized exports and documents in that workspace. Each application has its own sources, evidence, graph, decisions, runs, and outputs; the installed plugin remains shared.
 
 ```mermaid
 flowchart LR
-    S[Authorized legacy sources] --> W[A03 workspace]
+    S[Authorized legacy sources] --> W[App workspace]
     W --> P[Six-phase investigation]
     P --> O[Phase documents, E2E, Boundary Map, QA, presentation]
 ```
@@ -88,7 +88,7 @@ Plus traceable evidence, a question list, QA report, E2E Trace, Boundary Map, an
 The plugin is a Codex installation. For Claude or another compatible runtime, first obtain the package (clone/download or use its local Codex plugin cache), then ask an agent to run:
 
 ```text
-$sms-kit install claude D:\investigations\A03
+$sms-kit install claude <PROJECT_PATH>
 ```
 
 That creates the project-scoped Claude skill link. The six-phase contract and outputs stay the same.
@@ -100,7 +100,7 @@ The CLI is for local setup and package checks, not normal investigation work:
 
 ```powershell
 py -3.11 plugins\sms-kit\scripts\sms_kit.py validate
-py -3.11 plugins\sms-kit\scripts\sms_kit.py preflight --app-root D:\investigations\A03
+py -3.11 plugins\sms-kit\scripts\sms_kit.py preflight --app-root <APP_WORKSPACE>
 ```
 
 The kit supports controlled Access extraction, `pyodbc`/Microsoft SQL Server ODBC access when explicitly authorized, Graphify-assisted discovery, optional compilation-database context, and provider-neutral multi-agent processing. It does not include CodeWiki as a dependency. Read the installed skill or the package files under `plugins/sms-kit/` only when maintaining the kit.

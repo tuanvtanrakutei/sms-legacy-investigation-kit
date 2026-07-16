@@ -179,14 +179,14 @@ def main() -> int:
 
     package_data = load_json(root / "specifications/package.json", errors)
     if isinstance(package_data, dict):
-        if package_data.get("version") != "2.2.0" or package_data.get("contract_version") != "2.1":
-            errors.append("Package and contract versions must be 2.2.0 and 2.1")
+        if package_data.get("version") != "2.2.1" or package_data.get("contract_version") != "2.1":
+            errors.append("Package and contract versions must be 2.2.1 and 2.1")
         inspiration = package_data.get("architecture_inspiration", {})
         if not isinstance(inspiration, dict) or inspiration.get("dependency") is not False or inspiration.get("vendored_code") is not False:
             errors.append("CodeWiki reference must remain non-dependency and non-vendored")
 
     publication_checks = {
-        "README.md": ("SMS Legacy Investigation Kit", "2.2.0", "codex plugin add", "$sms-kit init A03"),
+        "README.md": ("SMS Legacy Investigation Kit", "2.2.1", "codex plugin add", "$sms-kit init <APP_ID>"),
         "LICENSE": ("Apache License", "Version 2.0, January 2004"),
         "NOTICE": ("Copyright 2026 Vo Ta Tuan", "vo-ta-tuan@anrakutei.vn"),
         "SECURITY.md": ("vo-ta-tuan@anrakutei.vn", "Do not open a public GitHub issue"),
@@ -234,8 +234,8 @@ def main() -> int:
 
     plugin_manifest = load_json(root / ".codex-plugin/plugin.json", errors)
     if isinstance(plugin_manifest, dict):
-        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != "2.2.0":
-            errors.append("Plugin manifest must identify sms-kit version 2.2.0")
+        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != "2.2.1":
+            errors.append("Plugin manifest must identify sms-kit version 2.2.1")
         if plugin_manifest.get("skills") != "./skills/":
             errors.append("Plugin manifest must expose ./skills/")
     marketplace = load_json(repository_root / ".agents/plugins/marketplace.json", errors)
