@@ -3,9 +3,11 @@ name: sms-kit
 description: Analyze Microsoft Access VBA applications and MDB/ACCDB/ADP projects connected to SQL Server through a mandatory six-phase, evidence-backed legacy-system investigation with Access extraction, deterministic module planning, and provider-neutral multi-agent orchestration. Use when an agent must package, initialize, analyze, review, or continue investigation of an SMS A-series satellite app and produce Phase documents, E2E traces, boundary maps, question lists, QA, or presentation inputs.
 ---
 
-# SMS Legacy Investigation Kit V2.1
+# SMS Legacy Investigation Kit V2.2
 
 Use one shared investigation method while keeping every app's sources, graph, decisions, sessions, and outputs isolated.
+
+Treat `scripts/`, `references/`, `specifications/`, `schemas/`, `templates/`, and `orchestration/` below as paths under this plugin's package root, two levels above this `SKILL.md` file.
 
 ## Interpret the user command guide
 
@@ -14,7 +16,7 @@ Treat these short forms as explicit user requests. They are agent commands, not 
 | User input | Required action |
 |---|---|
 | `$sms-kit help` | Return the command guide below and do not modify an app workspace. |
-| `$sms-kit install codex` | Run `scripts/sms_kit.py install --runtime codex`; report the discovery path and restart requirement. |
+| `$sms-kit install codex` | Explain that `$sms-kit` is already installed as a Codex plugin; do not create a manual skill link. |
 | `$sms-kit install claude <PROJECT_PATH>` | Run `scripts/sms_kit.py install --runtime claude --project <PROJECT_PATH>`; report the discovery path and restart requirement. |
 | `$sms-kit init <APP_ID>` | Use app initialization mode; ask for or infer only the safe workspace/name details, run `scripts/sms_kit.py init`, then stop. |
 | `$sms-kit assess <APP_ID>` | Inspect the manifest and authorized source inventory; report coverage, gaps, and required approvals without analyzing a phase. |

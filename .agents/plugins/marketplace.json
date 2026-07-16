@@ -1,0 +1,20 @@
+{
+  "name": "sms-legacy-kit",
+  "interface": {
+    "displayName": "SMS Legacy Investigation Kit"
+  },
+  "plugins": [
+    {
+      "name": "sms-kit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/sms-kit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0 - 2026-07-16
+
+- Package the kit as the installable `sms-kit` Codex plugin and publish the `sms-legacy-kit` marketplace catalog.
+- Move implementation resources beneath `plugins/sms-kit` so a plugin installation is self-contained.
+- Simplify the public README to the user journey: install, initialize one app, and ask an agent.
+
 All notable changes to this project are documented in this file. The format follows Keep a Changelog principles and versions use semantic versioning.
 
 ## [Unreleased]

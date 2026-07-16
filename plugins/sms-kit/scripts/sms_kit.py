@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import subprocess
@@ -32,7 +33,7 @@ def parse_args() -> argparse.Namespace:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("validate", help="Validate this shared package without analyzing an app.")
 
-    install = commands.add_parser("install", help="Install this package as an agent-discoverable skill.")
+    install = commands.add_parser("install", help="Install the skill for a non-Codex runtime.")
     install.add_argument("--runtime", choices=("codex", "claude", "generic"), required=True)
     install.add_argument("--project", help="Claude project directory; required for --runtime claude.")
     install.add_argument("--destination", help="Skill destination; required for --runtime generic.")
@@ -62,13 +63,55 @@ def install_destination(args: argparse.Namespace) -> Path:
     return Path(args.destination).expanduser().resolve()
 
 
+def create_directory_link(link: Path, target: Path) -> int:
+    if os.name != "nt":
+        link.symlink_to(target, target_is_directory=True)
+        return 0
+    quote = lambda value: "'" + str(value).replace("'", "''") + "'"
+    command = f"New-Item -ItemType Junction -Path {quote(link)} -Target {quote(target)} | Out-Null"
+    encoded = base64.b64encode(command.encode("utf-16le")).decode("ascii")
+    result = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(result.stderr or result.stdout, end="")
+    return result.returncode
+
+
 def install_skill(args: argparse.Namespace) -> int:
+    if args.runtime == "codex":
+        print("sms-kit is installed for Codex through `codex plugin add sms-kit@sms-legacy-kit`.")
+        print("Do not create a manual .codex/skills link.")
+        return 0
     try:
         destination = install_destination(args)
     except ValueError as exc:
         print(f"ERROR: {exc}")
         return 2
     source = PACKAGE.resolve()
+    if args.runtime == "claude":
+        runtime_root = destination.parents[1] / "sms-kit-runtime"
+        skill_source = runtime_root / "skills" / "sms-kit"
+        if args.dry_run:
+            print(f"Would install package runtime for Claude: {runtime_root} -> {source}")
+            print(f"Would install Claude skill: {destination} -> {skill_source}")
+            return 0
+        for link, target in ((runtime_root, source), (destination, skill_source)):
+            if link.exists():
+                if link.resolve() == target.resolve():
+                    continue
+                print(f"ERROR: destination already exists and targets a different path: {link}")
+                return 2
+            link.parent.mkdir(parents=True, exist_ok=True)
+            if create_directory_link(link, target) != 0:
+                return 1
+        print(f"Installed sms-kit for Claude: {destination}")
+        print("Restart or open a new Claude session so it discovers the skill.")
+        return 0
+    source = PACKAGE / "skills" / "sms-kit"
     if args.dry_run:
         print(f"Would install sms-kit for {args.runtime}: {destination} -> {source}")
         return 0
@@ -79,18 +122,8 @@ def install_skill(args: argparse.Namespace) -> int:
         print(f"ERROR: destination already exists and targets a different path: {destination}")
         return 2
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if os.name == "nt":
-        result = subprocess.run(
-            ["cmd", "/c", f'mklink /J "{destination}" "{source}"'],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            print(result.stderr or result.stdout, end="")
-            return result.returncode
-    else:
-        destination.symlink_to(source, target_is_directory=True)
+    if create_directory_link(destination, source) != 0:
+        return 1
     print(f"Installed sms-kit for {args.runtime}: {destination}")
     print("Restart or open a new agent session so it discovers the skill.")
     return 0

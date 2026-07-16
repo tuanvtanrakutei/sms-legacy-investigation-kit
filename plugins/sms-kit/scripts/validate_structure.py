@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate V2.1 package contracts and an optional app manifest without analysis."""
+"""Validate V2.2 plugin package contracts and an optional app manifest without analysis."""
 
 from __future__ import annotations
 
@@ -10,10 +10,7 @@ from pathlib import Path
 
 
 REQUIRED_FILES = (
-    ".gitignore", ".graphifyignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md",
-    "CODE_OF_CONDUCT.md", "THIRD_PARTY_NOTICES.md", "CITATION.cff", "requirements-dev.txt", "SKILL.md", "agents/openai.yaml", "adapters/adapter-map.json",
-    ".github/workflows/validate.yml", ".github/dependabot.yml", ".github/pull_request_template.md",
-    ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/feature_request.yml",
+    "requirements-dev.txt", ".codex-plugin/plugin.json", "skills/sms-kit/SKILL.md", "skills/sms-kit/agents/openai.yaml", "adapters/adapter-map.json",
     "specifications/package.json", "specifications/runtime-capabilities.yaml", "specifications/language-support.yaml",
     "specifications/senior-system-analyst-instruction.md", "specifications/evidence-policy.yaml", "specifications/output-contract.yaml",
     "schemas/manifest.schema.json", "schemas/evidence.schema.json", "schemas/traceability-row.schema.json", "schemas/task.schema.json",
@@ -35,6 +32,12 @@ REQUIRED_FILES = (
     "examples/minimal-app/.investigationignore", "examples/minimal-app/sources/vba/DemoOrderForm.bas", "examples/minimal-app/sources/sql/demo_orders.sql",
 )
 JSON_FILES = tuple(path for path in REQUIRED_FILES if path.endswith(".json"))
+REPOSITORY_FILES = (
+    ".gitignore", ".graphifyignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md",
+    "CODE_OF_CONDUCT.md", "THIRD_PARTY_NOTICES.md", "CITATION.cff", ".agents/plugins/marketplace.json",
+    ".github/workflows/validate.yml", ".github/dependabot.yml", ".github/pull_request_template.md",
+    ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/feature_request.yml",
+)
 PHASE_HEADINGS = tuple(f"Phase {number} — {title}" for number, title in enumerate((
     "Data Understanding", "Screen & Form Analysis", "Logic & Processing", "Workflow Reconstruction", "Document Integration", "Synthesis"
 ), 1))
@@ -60,6 +63,7 @@ IGNORED_SCAN_DIRS = {
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--package", required=True)
+    parser.add_argument("--repository-root", help="Repository root containing public metadata and CI files.")
     parser.add_argument("--manifest")
     return parser.parse_args()
 
@@ -148,14 +152,19 @@ def validate_orchestration(root: Path, json_data: dict[str, object], errors: lis
 def main() -> int:
     args = parse_args()
     root = Path(args.package).expanduser().resolve()
+    repository_root = Path(args.repository_root).expanduser().resolve() if args.repository_root else root.parents[1]
     errors: list[str] = []
     warnings: list[str] = []
     for relative in REQUIRED_FILES:
         path = root / relative
         if not path.is_file() or path.stat().st_size == 0:
             errors.append(f"Missing or empty required file: {relative}")
+    for relative in REPOSITORY_FILES:
+        path = repository_root / relative
+        if not path.is_file() or path.stat().st_size == 0:
+            errors.append(f"Missing or empty repository file: {relative}")
 
-    skill_path = root / "SKILL.md"
+    skill_path = root / "skills/sms-kit/SKILL.md"
     if skill_path.is_file():
         skill = skill_path.read_text(encoding="utf-8")
         if not skill.startswith("---\nname: sms-kit\n") or "description:" not in skill.split("---", 2)[1]:
@@ -170,34 +179,34 @@ def main() -> int:
 
     package_data = load_json(root / "specifications/package.json", errors)
     if isinstance(package_data, dict):
-        if package_data.get("version") != "2.1.8" or package_data.get("contract_version") != "2.1":
-            errors.append("Package and contract versions must be 2.1.8 and 2.1")
+        if package_data.get("version") != "2.2.0" or package_data.get("contract_version") != "2.1":
+            errors.append("Package and contract versions must be 2.2.0 and 2.1")
         inspiration = package_data.get("architecture_inspiration", {})
         if not isinstance(inspiration, dict) or inspiration.get("dependency") is not False or inspiration.get("vendored_code") is not False:
             errors.append("CodeWiki reference must remain non-dependency and non-vendored")
 
     publication_checks = {
-        "README.md": ("SMS Legacy Investigation Kit", "2.1.8", "Apache License 2.0", "CodeWiki is not installed"),
+        "README.md": ("SMS Legacy Investigation Kit", "2.2.0", "codex plugin add", "$sms-kit init A03"),
         "LICENSE": ("Apache License", "Version 2.0, January 2004"),
         "NOTICE": ("Copyright 2026 Vo Ta Tuan", "vo-ta-tuan@anrakutei.vn"),
         "SECURITY.md": ("vo-ta-tuan@anrakutei.vn", "Do not open a public GitHub issue"),
-        ".github/workflows/validate.yml": ("pytest",),
+        ".github/workflows/validate.yml": ("pytest", "plugins/sms-kit"),
     }
     for relative, tokens in publication_checks.items():
-        path = root / relative
+        path = repository_root / relative
         if not path.is_file():
             continue
         content = path.read_text(encoding="utf-8")
         for token in tokens:
             if token not in content:
                 errors.append(f"Publication file {relative} missing required token: {token}")
-    workflow_path = root / ".github/workflows/validate.yml"
+    workflow_path = repository_root / ".github/workflows/validate.yml"
     if workflow_path.is_file():
         workflow = workflow_path.read_text(encoding="utf-8")
         for action in ("actions/checkout", "actions/setup-python"):
             if not re.search(rf"(?m)^\s*uses:\s*{re.escape(action)}@v\d+\s*$", workflow):
                 errors.append(f"Validate workflow must use a supported major version of {action}")
-    ignore_path = root / ".gitignore"
+    ignore_path = repository_root / ".gitignore"
     if ignore_path.is_file():
         ignore_text = ignore_path.read_text(encoding="utf-8")
         for token in ("*.mdb", "*.accdb", "*.adp", ".env", "*.dsn", "graphify-out/"):
@@ -222,6 +231,20 @@ def main() -> int:
         if path.is_file():
             json_data[relative] = load_json(path, errors)
     validate_orchestration(root, json_data, errors)
+
+    plugin_manifest = load_json(root / ".codex-plugin/plugin.json", errors)
+    if isinstance(plugin_manifest, dict):
+        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != "2.2.0":
+            errors.append("Plugin manifest must identify sms-kit version 2.2.0")
+        if plugin_manifest.get("skills") != "./skills/":
+            errors.append("Plugin manifest must expose ./skills/")
+    marketplace = load_json(repository_root / ".agents/plugins/marketplace.json", errors)
+    if isinstance(marketplace, dict):
+        if marketplace.get("name") != "sms-legacy-kit":
+            errors.append("Marketplace name must be sms-legacy-kit")
+        entries = marketplace.get("plugins")
+        if not isinstance(entries, list) or not any(isinstance(entry, dict) and entry.get("name") == "sms-kit" and entry.get("source", {}).get("path") == "./plugins/sms-kit" for entry in entries):
+            errors.append("Marketplace must expose plugins/sms-kit")
 
     manifest_path = Path(args.manifest).expanduser().resolve() if args.manifest else root / "references/manifest.example.yaml"
     if not manifest_path.is_file():
@@ -266,7 +289,7 @@ def main() -> int:
             print(f"ERROR: {error}")
         print(f"Validation failed: {len(errors)} error(s), {len(warnings)} warning(s)")
         return 1
-    print(f"Validation passed: {len(REQUIRED_FILES)} required files, {len(warnings)} warning(s)")
+    print(f"Validation passed: {len(REQUIRED_FILES)} plugin files and {len(REPOSITORY_FILES)} repository files, {len(warnings)} warning(s)")
     print("No app corpus was analyzed.")
     return 0
 

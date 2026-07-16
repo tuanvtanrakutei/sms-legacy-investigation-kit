@@ -9,6 +9,7 @@ import yaml
 
 
 PACKAGE = Path(__file__).resolve().parents[1]
+REPOSITORY = PACKAGE.parents[1]
 SCRIPTS = PACKAGE / "scripts"
 
 
@@ -26,10 +27,10 @@ def run_script(name: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 def test_public_package_contract() -> None:
     package = json.loads((PACKAGE / "specifications" / "package.json").read_text(encoding="utf-8"))
-    assert package["version"] == "2.1.8"
+    assert package["version"] == "2.2.0"
     assert package["architecture_inspiration"]["dependency"] is False
     assert package["architecture_inspiration"]["vendored_code"] is False
-    run_script("validate_structure.py", "--package", str(PACKAGE))
+    run_script("validate_structure.py", "--package", str(PACKAGE), "--repository-root", str(REPOSITORY))
 
 
 def test_public_yaml_has_unique_keys() -> None:
@@ -48,8 +49,8 @@ def test_public_yaml_has_unique_keys() -> None:
         yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
         construct_mapping,
     )
-    yaml_files = sorted((PACKAGE / ".github").rglob("*.yml"))
-    yaml_files += [PACKAGE / "CITATION.cff", PACKAGE / "examples" / "minimal-app" / "manifest.yaml"]
+    yaml_files = sorted((REPOSITORY / ".github").rglob("*.yml"))
+    yaml_files += [REPOSITORY / "CITATION.cff", PACKAGE / "examples" / "minimal-app" / "manifest.yaml"]
     for path in yaml_files:
         yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeyLoader)
 
@@ -62,6 +63,16 @@ def test_friendly_cli_entrypoint(tmp_path: Path) -> None:
         "--destination", str(tmp_path / "sms-kit"),
         "--dry-run",
     )
+    run_script(
+        "sms_kit.py", "install",
+        "--runtime", "claude",
+        "--project", str(tmp_path / "claude-project"),
+        "--dry-run",
+    )
+    claude_project = tmp_path / "claude-project"
+    run_script("sms_kit.py", "install", "--runtime", "claude", "--project", str(claude_project))
+    assert (claude_project / ".claude" / "sms-kit-runtime").resolve() == PACKAGE.resolve()
+    assert (claude_project / ".claude" / "skills" / "sms-kit").resolve() == (PACKAGE / "skills" / "sms-kit").resolve()
     run_script(
         "sms_kit.py", "init",
         "--root", str(tmp_path),

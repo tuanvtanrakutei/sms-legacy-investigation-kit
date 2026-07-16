@@ -12,8 +12,8 @@ Describe the problem and the smallest change that solves it.
 
 ## Validation
 
-- [ ] `python -m compileall -q scripts tests`
-- [ ] `python scripts/validate_structure.py --package .`
+- [ ] `python -m compileall -q plugins/sms-kit/scripts plugins/sms-kit/tests`
+- [ ] `python plugins/sms-kit/scripts/validate_structure.py --package plugins/sms-kit --repository-root .`
 - [ ] `python -m pytest -q`
 - [ ] PowerShell adapter parsed on Windows, if changed
 
