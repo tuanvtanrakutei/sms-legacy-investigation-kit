@@ -10,6 +10,16 @@ All notable changes to this project are documented in this file. The format foll
 - ADP extraction validation on a compatible legacy Access environment.
 - A01 regression trial only after explicit authorization.
 
+## [2.1.3] - 2026-07-16
+
+### Changed
+
+- Updated GitHub Actions checkout to v7 and the PyYAML/jsonschema development dependency minimum versions after successful CI validation.
+
+### Fixed
+
+- Applied the jsonschema update directly after its Dependabot pull request conflicted with the prior PyYAML requirements update.
+
 ## [2.1.2] - 2026-07-16
 
 ### Fixed
