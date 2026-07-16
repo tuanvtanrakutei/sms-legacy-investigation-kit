@@ -10,6 +10,12 @@ All notable changes to this project are documented in this file. The format foll
 - ADP extraction validation on a compatible legacy Access environment.
 - A01 regression trial only after explicit authorization.
 
+## [2.1.4] - 2026-07-16
+
+### Changed
+
+- Updated the development test dependency baseline to pytest 9.1.1 after successful Ubuntu and Windows CI validation.
+
 ## [2.1.3] - 2026-07-16
 
 ### Changed
