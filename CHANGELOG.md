@@ -1,4 +1,8 @@
 # Changelog
+## 2.2.2 - 2026-07-17
+
+- Add explicit safe adoption of an existing app workspace without modifying its current files.
+
 ## 2.2.1 - 2026-07-16
 
 - Replace app-specific onboarding examples with reusable <APP_ID> placeholders.

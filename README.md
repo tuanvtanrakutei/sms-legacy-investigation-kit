@@ -1,7 +1,7 @@
 # SMS Legacy Investigation Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.2.1-green.svg)](plugins/sms-kit/specifications/package.json)
+[![Version](https://img.shields.io/badge/version-2.2.2-green.svg)](plugins/sms-kit/specifications/package.json)
 
 An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server application, one app at a time. It turns authorized source material into the six analyst phases, evidence, E2E Trace, Boundary Map, QA report, and presentation inputs.
 
@@ -10,7 +10,7 @@ An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server ap
 You do **not** need to clone this repository or create a link in an agent folder. Add the public marketplace once, then install the plugin:
 
 ```powershell
-codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --ref v2.2.1 --sparse .agents/plugins --sparse plugins/sms-kit
+codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --ref v2.2.2 --sparse .agents/plugins --sparse plugins/sms-kit
 codex plugin add sms-kit@sms-legacy-kit
 ```
 
@@ -48,7 +48,7 @@ a Boundary Map, a QA report, and presentation inputs.
 
 ## Set up one app workspace
 
-Ask the agent for `$sms-kit init <APP_ID>`, or use the optional CLI if no agent is involved:
+For a new empty folder, ask the agent for `$sms-kit init <APP_ID>`. For an existing app project, explicitly ask it to adopt <APP_ROOT> without changing current files. The optional CLI is:
 
 ```powershell
 py -3.11 plugins\sms-kit\scripts\sms_kit.py init `
@@ -56,6 +56,8 @@ py -3.11 plugins\sms-kit\scripts\sms_kit.py init `
   --app-id <APP_ID> `
   --name-en "<APP_NAME>"
 ```
+
+For an existing non-empty app project, use --app-root <APP_ROOT> and --adopt-existing instead of --root. The initializer preserves existing files and creates only missing kit-owned folders/files.
 
 Put the application's authorized exports and documents in that workspace. Each application has its own sources, evidence, graph, decisions, runs, and outputs; the installed plugin remains shared.
 

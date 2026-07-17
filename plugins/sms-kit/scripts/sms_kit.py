@@ -39,10 +39,13 @@ def parse_args() -> argparse.Namespace:
     install.add_argument("--destination", help="Skill destination; required for --runtime generic.")
     install.add_argument("--dry-run", action="store_true", help="Print the planned installation without changing files.")
 
-    init = commands.add_parser("init", help="Create an isolated workspace for one legacy app.")
-    init.add_argument("--root", required=True, help="Parent directory for app workspaces.")
+    init = commands.add_parser("init", help="Create or safely adopt one legacy app workspace.")
+    init_location = init.add_mutually_exclusive_group(required=True)
+    init_location.add_argument("--root", help="Parent directory for a new app workspace.")
+    init_location.add_argument("--app-root", help="Existing or new app workspace directory.")
     init.add_argument("--app-id", required=True, help="App identifier, for example A03.")
     init.add_argument("--name-en", required=True, help="English app name.")
+    init.add_argument("--adopt-existing", action="store_true", help="Safely add kit files to a non-empty --app-root.")
     init.add_argument("--runtime", default="generic", help="Agent runtime label (default: generic).")
 
     preflight = commands.add_parser("preflight", help="Check capabilities and manifest before any analysis.")
@@ -136,13 +139,18 @@ def main() -> int:
     if args.command == "install":
         return install_skill(args)
     if args.command == "init":
-        return run(
-            "init_app.py",
-            "--root", args.root,
+        init_args = [
             "--app-id", args.app_id,
             "--name-en", args.name_en,
             "--runtime", args.runtime,
-        )
+        ]
+        if args.root:
+            init_args.extend(["--root", args.root])
+        else:
+            init_args.extend(["--app-root", args.app_root])
+        if args.adopt_existing:
+            init_args.append("--adopt-existing")
+        return run("init_app.py", *init_args)
     app_root = Path(args.app_root).expanduser().resolve()
     manifest = app_root / "manifest.yaml"
     if not manifest.is_file():

@@ -18,7 +18,7 @@ Treat these short forms as explicit user requests. They are agent commands, not 
 | `$sms-kit help` | Return the command guide below and do not modify an app workspace. |
 | `$sms-kit install codex` | Explain that `$sms-kit` is already installed as a Codex plugin; do not create a manual skill link. |
 | `$sms-kit install claude <PROJECT_PATH>` | Run `scripts/sms_kit.py install --runtime claude --project <PROJECT_PATH>`; report the discovery path and restart requirement. |
-| `$sms-kit init <APP_ID>` | Use app initialization mode; ask for or infer only the safe workspace/name details, run `scripts/sms_kit.py init`, then stop. |
+| `$sms-kit init <APP_ID>` | Use app initialization mode. For a non-empty existing project root, require explicit adoption with scripts/sms_kit.py init --app-root <APP_ROOT> --adopt-existing; preserve existing files, then stop. |
 | `$sms-kit assess <APP_ID>` | Inspect the manifest and authorized source inventory; report coverage, gaps, and required approvals without analyzing a phase. |
 | `$sms-kit phase <1-6> <APP_ID>` | Run only the named phase after reading its required contract/template and available evidence. |
 | `$sms-kit run <APP_ID>` | Run the six phases in order only when the user explicitly authorizes the full investigation. |
@@ -30,7 +30,7 @@ Accept the equivalent Vietnamese or plain-language request. If an app ID is omit
 ## Select the operating mode
 
 1. Use **package mode** when asked to create, install, validate, or modify this kit. Do not analyze A01 or another app unless the user separately authorizes a trial.
-2. Use **app initialization mode** when asked to scaffold a new app workspace. Run `scripts/init_app.py`, then stop unless analysis is also requested.
+2. Use **app initialization mode** when asked to scaffold a new app workspace. For a non-empty existing project, require explicit --app-root and --adopt-existing; never overwrite files, then stop unless analysis is also requested.
 3. Use **investigation mode** only when asked to run one or more phases for a named app.
 4. Use **rendering mode** only after Phase 6 and traceability validation are complete.
 5. Use **orchestration mode** when the user requests multi-agent execution. Parallelize evidence collection and affected leaf modules, but publish the six phases sequentially through coordinator-owned gates.

@@ -27,7 +27,7 @@ def run_script(name: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 def test_public_package_contract() -> None:
     package = json.loads((PACKAGE / "specifications" / "package.json").read_text(encoding="utf-8"))
-    assert package["version"] == "2.2.1"
+    assert package["version"] == "2.2.2"
     assert package["architecture_inspiration"]["dependency"] is False
     assert package["architecture_inspiration"]["vendored_code"] is False
     run_script("validate_structure.py", "--package", str(PACKAGE), "--repository-root", str(REPOSITORY))
@@ -164,3 +164,38 @@ def test_synthetic_module_aware_pipeline(tmp_path: Path) -> None:
     tasks = [json.loads(path.read_text(encoding="utf-8")) for path in (run / "tasks").glob("*.json")]
     assert tasks
     assert any(task["module_targets"] for task in tasks)
+
+
+def test_adopt_existing_workspace_preserves_files(tmp_path: Path) -> None:
+    app = tmp_path / "T23"
+    original = app / "docs" / "scope.md"
+    original.parent.mkdir(parents=True)
+    original.write_text("preserve", encoding="utf-8")
+
+    refused = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "sms_kit.py"),
+            "init",
+            "--app-root", str(app),
+            "--app-id", "T23",
+            "--name-en", "Adopted Existing App",
+        ],
+        cwd=PACKAGE,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert refused.returncode != 0
+    assert not (app / "manifest.yaml").exists()
+
+    run_script(
+        "sms_kit.py",
+        "init",
+        "--app-root", str(app),
+        "--app-id", "T23",
+        "--name-en", "Adopted Existing App",
+        "--adopt-existing",
+    )
+    assert original.read_text(encoding="utf-8") == "preserve"
+    assert (app / "manifest.yaml").is_file()

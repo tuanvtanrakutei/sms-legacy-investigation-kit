@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an isolated workspace for one legacy SMS app without analyzing it."""
+"""Create or safely adopt an isolated workspace for one legacy SMS app without analyzing it."""
 
 from __future__ import annotations
 
@@ -29,6 +29,13 @@ SOURCE_DIRS = (
     "outputs",
     "graphify-out",
     "runs",
+)
+OWNED_FILES = (
+    "manifest.yaml",
+    "evidence/evidence.json",
+    ".gitignore",
+    ".graphifyignore",
+    ".investigationignore",
 )
 
 
@@ -107,7 +114,9 @@ multi_agent:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", required=True, help="Parent directory for app workspaces")
+    location = parser.add_mutually_exclusive_group(required=True)
+    location.add_argument("--root", help="Parent directory for a new app workspace")
+    location.add_argument("--app-root", help="Existing or new app workspace directory")
     parser.add_argument("--app-id", required=True, help="App identifier such as A03")
     parser.add_argument("--name-en", required=True, help="English business name")
     parser.add_argument(
@@ -116,6 +125,11 @@ def parse_args() -> argparse.Namespace:
         help="Comma-separated output languages from EN,JA,VI (default: EN)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned paths only")
+    parser.add_argument(
+        "--adopt-existing",
+        action="store_true",
+        help="Allow safe initialization of a non-empty --app-root without modifying existing files",
+    )
     parser.add_argument("--runtime", choices=("codex", "claude", "generic"), default="generic")
     parser.add_argument("--max-parallel", type=int, default=4)
     return parser.parse_args()
@@ -134,16 +148,30 @@ def main() -> int:
     if args.max_parallel < 1:
         raise SystemExit("--max-parallel must be at least 1")
 
-    app_root = Path(args.root).expanduser().resolve() / app_id
-    planned = [app_root / item for item in SOURCE_DIRS]
-    planned += [app_root / "manifest.yaml", app_root / "evidence/evidence.json", app_root / ".gitignore", app_root / ".graphifyignore", app_root / ".investigationignore"]
+    app_root = Path(args.app_root).expanduser().resolve() if args.app_root else Path(args.root).expanduser().resolve() / app_id
+    if args.app_root and app_root.name.upper() != app_id:
+        raise SystemExit("--app-root directory name must match --app-id")
 
+    planned = [app_root / item for item in SOURCE_DIRS]
+    planned += [app_root / item for item in OWNED_FILES]
     if args.dry_run:
-        print(json.dumps({"app_root": str(app_root), "planned": [str(p) for p in planned]}, indent=2))
+        print(json.dumps({
+            "app_root": str(app_root),
+            "planned": [str(path) for path in planned],
+            "adopt_existing": args.adopt_existing,
+        }, indent=2))
         return 0
 
-    if app_root.exists() and any(app_root.iterdir()):
-        raise SystemExit(f"Refusing to initialize non-empty directory: {app_root}")
+    existing_nonempty = app_root.exists() and any(app_root.iterdir())
+    if existing_nonempty and not args.adopt_existing:
+        raise SystemExit(f"Refusing to initialize non-empty directory without --adopt-existing: {app_root}")
+    if existing_nonempty:
+        already_initialized = [relative for relative in OWNED_FILES if (app_root / relative).exists()]
+        if already_initialized:
+            raise SystemExit(
+                "Workspace already contains kit-owned files; use preflight instead: "
+                + ", ".join(already_initialized)
+            )
 
     for directory in SOURCE_DIRS:
         (app_root / directory).mkdir(parents=True, exist_ok=True)
@@ -166,7 +194,8 @@ def main() -> int:
         ("app.investigationignore", ".investigationignore"),
     ):
         shutil.copy2(package_root / "templates" / source_name, app_root / target_name)
-    print(f"Initialized {app_root}")
+    verb = "Adopted existing workspace" if existing_nonempty else "Initialized"
+    print(f"{verb} {app_root}")
     return 0
 
 
