@@ -1,7 +1,7 @@
 # SMS Legacy Investigation Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.2.2-green.svg)](plugins/sms-kit/specifications/package.json)
+[![Release](https://img.shields.io/github/v/release/tuanvtanrakutei/sms-legacy-investigation-kit?color=green&label=release)](https://github.com/tuanvtanrakutei/sms-legacy-investigation-kit/releases/latest)
 
 An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server application, one app at a time. It turns authorized source material into the six analyst phases, evidence, E2E Trace, Boundary Map, QA report, and presentation inputs.
 
@@ -10,11 +10,13 @@ An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server ap
 You do **not** need to clone this repository or create a link in an agent folder. Add the public marketplace once, then install the plugin:
 
 ```powershell
-codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --ref v2.2.2 --sparse .agents/plugins --sparse plugins/sms-kit
+codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --sparse .agents/plugins --sparse plugins/sms-kit
 codex plugin add sms-kit@sms-legacy-kit
 ```
 
 Start a new Codex conversation after installation. Codex manages the installed plugin location and discovers `$sms-kit` automatically.
+
+> To pin a specific release instead of the latest, add `--ref vX.Y.Z` to the marketplace command (for example `--ref v2.3.0`). See the [releases page](https://github.com/tuanvtanrakutei/sms-legacy-investigation-kit/releases).
 
 To update later:
 

@@ -26,10 +26,22 @@ def run_script(name: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 
 def test_public_package_contract() -> None:
+    import re
+
     package = json.loads((PACKAGE / "specifications" / "package.json").read_text(encoding="utf-8"))
-    assert package["version"] == "2.2.2"
+    version = package["version"]
+    assert re.fullmatch(r"\d+\.\d+\.\d+", version), version
     assert package["architecture_inspiration"]["dependency"] is False
     assert package["architecture_inspiration"]["vendored_code"] is False
+
+    # package.json is the single source of truth; every manifest bump_version.py
+    # touches must stay in lock-step so one release command is sufficient.
+    for manifest in (".codex-plugin/plugin.json", ".claude-plugin/plugin.json"):
+        assert json.loads((PACKAGE / manifest).read_text(encoding="utf-8"))["version"] == version
+    marketplace = json.loads((REPOSITORY / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
+    assert marketplace["metadata"]["version"] == version
+    assert all(entry["version"] == version for entry in marketplace["plugins"])
+
     run_script("validate_structure.py", "--package", str(PACKAGE), "--repository-root", str(REPOSITORY))
 
 
@@ -164,6 +176,48 @@ def test_synthetic_module_aware_pipeline(tmp_path: Path) -> None:
     tasks = [json.loads(path.read_text(encoding="utf-8")) for path in (run / "tasks").glob("*.json")]
     assert tasks
     assert any(task["module_targets"] for task in tasks)
+
+
+def test_access_runtime_probe_reports_json() -> None:
+    result = run_script("access_runtime.py")
+    report = json.loads(result.stdout)
+    for key in ("platform", "python_process_bitness", "registry", "powershell_candidates", "selected_host", "activation", "status"):
+        assert key in report, f"access runtime report missing {key}"
+    assert report["activation"]["status"] in {"NOT_REQUESTED", "READY", "NOT_INSTALLED", "REGISTERED_BUT_ACTIVATION_FAILED", "INSTALLED_BUT_BITNESS_MISMATCH", "NOT_FOUND"}
+    assert report["selected_host"]["status"] in {"READY", "NOT_INSTALLED", "INSTALLED_BUT_BITNESS_MISMATCH", "NOT_FOUND"}
+
+
+def test_extract_access_reports_runtime_block(tmp_path: Path) -> None:
+    database = tmp_path / "runtime.accdb"
+    database.write_text("synthetic dry-run placeholder", encoding="utf-8")
+
+    discovered = run_script(
+        "extract_access.py",
+        "--database", str(database),
+        "--database-id", "DBR",
+        "--session-id", "DRY-RUNTIME",
+        "--output-dir", str(tmp_path / "extracted"),
+        "--dry-run",
+    )
+    plan = json.loads(discovered.stdout)
+    assert plan["status"] == "PREFLIGHT_ONLY"
+    runtime = plan["runtime"]
+    assert runtime["runtime_check"] == "COMPLETED"
+    assert runtime["runtime_tested"] is False
+    assert "host" in runtime and "status" in runtime["host"]
+
+    skipped = run_script(
+        "extract_access.py",
+        "--database", str(database),
+        "--database-id", "DBR",
+        "--session-id", "DRY-SKIP",
+        "--output-dir", str(tmp_path / "extracted"),
+        "--dry-run",
+        "--skip-runtime-check",
+    )
+    skipped_runtime = json.loads(skipped.stdout)["runtime"]
+    assert skipped_runtime["runtime_check"] == "SKIPPED"
+    assert skipped_runtime["runtime_tested"] is False
 
 
 def test_adopt_existing_workspace_preserves_files(tmp_path: Path) -> None:
