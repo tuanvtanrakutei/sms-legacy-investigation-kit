@@ -27,3 +27,6 @@ credentials/
 runs/
 outputs/drafts/
 outputs/render-cache/
+
+# Local agent/MCP config (per-machine; references secrets via env vars)
+.mcp.json
