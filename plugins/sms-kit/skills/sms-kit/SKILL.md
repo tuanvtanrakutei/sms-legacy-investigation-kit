@@ -61,7 +61,8 @@ For multi-agent work, also read `references/orchestration-guide.md`, `orchestrat
 
 ## Prepare source context safely
 
-- Run `scripts/preflight.py` before extraction. It reports capabilities and never installs dependencies.
+- Confirm input preconditions in `specifications/input-preconditions.md`. Export mode (pre-exported VBA/SQL in `sources/`) needs no Access runtime; extract mode (an MDB/ACCDB/ADP) requires a `READY` host. Missing inputs are warnings recorded as assumptions, never a silent gap.
+- Run `scripts/preflight.py` before extraction. It reports capabilities, detects the input mode, flags missing sources, and never installs dependencies.
 - For every MDB/ACCDB/ADP, run `scripts/extract_access.py --dry-run` first. Execute COM/DAO extraction only when authorized and a compatible Access runtime exists.
 - Never open the original Access binary. Executable extraction creates and hash-verifies a disposable snapshot.
 - Never store literal passwords in manifests or artifacts. Use external secret references and redact connection metadata.

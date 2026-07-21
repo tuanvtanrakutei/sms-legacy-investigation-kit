@@ -151,6 +151,76 @@ def _legacy_windows_access_capabilities() -> dict[str, bool | str]:
     return result
 
 
+def scan_app_sources(app_root: Path) -> dict[str, bool]:
+    def nonempty(rel: str) -> bool:
+        directory = app_root / rel
+        return directory.is_dir() and any(item.is_file() for item in directory.rglob("*"))
+
+    access_dir = app_root / "sources" / "access"
+    access_db = access_dir.is_dir() and any(
+        item.is_file() and item.suffix.lower() in {".mdb", ".accdb", ".adp"} for item in access_dir.rglob("*")
+    )
+    extracted = app_root / "extracted" / "access"
+    return {
+        "vba": nonempty("sources/vba"),
+        "sql": nonempty("sources/sql"),
+        "access_db": access_db,
+        "screenshots": nonempty("sources/screenshots"),
+        "reports": nonempty("sources/reports"),
+        "documents": nonempty("sources/documents"),
+        "samples": nonempty("sources/samples"),
+        "shared_docs": nonempty("shared-docs"),
+        "extracted_access": extracted.is_dir() and any(item.is_file() for item in extracted.rglob("*")),
+    }
+
+
+def input_preconditions(manifest: Path | None, needs: dict[str, bool], access: dict[str, object]) -> tuple[dict[str, object], list[str]]:
+    """Detect the input mode and report missing inputs as warnings, never failures."""
+    if not manifest or not (manifest.parent / "sources").is_dir():
+        return {"mode": "unknown", "reason": "no app workspace beside the manifest"}, []
+    app_root = manifest.parent
+    present = scan_app_sources(app_root)
+    warnings: list[str] = []
+    has_export = present["vba"] or present["sql"] or present["extracted_access"]
+    has_binary = bool(present["access_db"] or needs.get("access"))
+    needs_extraction = has_binary and not present["extracted_access"]
+    if needs_extraction:
+        mode = "mixed" if has_export else "extract"
+    elif has_export:
+        mode = "export"
+    else:
+        mode = "none"
+
+    recommended_missing: list[str] = []
+    if not present["extracted_access"]:
+        if not present["vba"]:
+            recommended_missing.append("sources/vba")
+        if not present["sql"]:
+            recommended_missing.append("sources/sql")
+
+    if mode == "none":
+        warnings.append("No app sources detected; add exported VBA/SQL (export mode) or an Access database (extract mode) before running the six phases.")
+    else:
+        for relative in recommended_missing:
+            warnings.append(f"No files in {relative}; affected phases will run but must record missing coverage as an assumption/open question.")
+    if not present["shared_docs"]:
+        warnings.append("No shared Japanese documents in shared-docs/; Phase 5 document integration will be limited.")
+
+    block: dict[str, object] = {
+        "app_root": str(app_root),
+        "mode": mode,
+        "present": present,
+        "recommended_missing": recommended_missing,
+    }
+    if needs_extraction:
+        runtime_status = access.get("runtime_status")
+        block["runtime_status"] = runtime_status
+        block["selected_host"] = access.get("selected_host")
+        if runtime_status != "READY":
+            warnings.append("Access database present but no READY runtime host; run scripts/access_runtime.py --smoke-test, or export VBA/SQL on a compatible host and use export mode.")
+    return block, warnings
+
+
 def main() -> int:
     args = parse_args()
     package = Path(args.package).expanduser().resolve()
@@ -192,6 +262,9 @@ def main() -> int:
     if args.runtime == "generic":
         recommendations.append("Map spawn/message/wait/inspect/interrupt operations before multi-agent execution.")
 
+    preconditions, precondition_warnings = input_preconditions(manifest, needs, access)
+    recommendations.extend(precondition_warnings)
+
     report = {
         "runtime": args.runtime,
         "python": sys.version.split()[0],
@@ -201,6 +274,7 @@ def main() -> int:
         "access": access,
         "discovered_skills": skills,
         "manifest_needs": needs,
+        "input_preconditions": preconditions,
         "recommendations": recommendations,
         "status": "PASS" if all(required.values()) else "FAIL",
     }
