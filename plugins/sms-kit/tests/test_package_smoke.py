@@ -26,10 +26,22 @@ def run_script(name: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 
 def test_public_package_contract() -> None:
+    import re
+
     package = json.loads((PACKAGE / "specifications" / "package.json").read_text(encoding="utf-8"))
-    assert package["version"] == "2.2.2"
+    version = package["version"]
+    assert re.fullmatch(r"\d+\.\d+\.\d+", version), version
     assert package["architecture_inspiration"]["dependency"] is False
     assert package["architecture_inspiration"]["vendored_code"] is False
+
+    # package.json is the single source of truth; every manifest bump_version.py
+    # touches must stay in lock-step so one release command is sufficient.
+    for manifest in (".codex-plugin/plugin.json", ".claude-plugin/plugin.json"):
+        assert json.loads((PACKAGE / manifest).read_text(encoding="utf-8"))["version"] == version
+    marketplace = json.loads((REPOSITORY / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
+    assert marketplace["metadata"]["version"] == version
+    assert all(entry["version"] == version for entry in marketplace["plugins"])
+
     run_script("validate_structure.py", "--package", str(PACKAGE), "--repository-root", str(REPOSITORY))
 
 

@@ -179,15 +179,20 @@ def main() -> int:
             errors.append("SKILL.md still contains TODO placeholders")
 
     package_data = load_json(root / "specifications/package.json", errors)
+    expected_version: str | None = None
     if isinstance(package_data, dict):
-        if package_data.get("version") != "2.2.2" or package_data.get("contract_version") != "2.1":
-            errors.append("Package and contract versions must be 2.2.2 and 2.1")
+        expected_version = package_data.get("version")
+        if not isinstance(expected_version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", expected_version):
+            errors.append("Package version must be semantic (X.Y.Z)")
+            expected_version = None
+        if package_data.get("contract_version") != "2.1":
+            errors.append("Contract version must be 2.1")
         inspiration = package_data.get("architecture_inspiration", {})
         if not isinstance(inspiration, dict) or inspiration.get("dependency") is not False or inspiration.get("vendored_code") is not False:
             errors.append("CodeWiki reference must remain non-dependency and non-vendored")
 
     publication_checks = {
-        "README.md": ("SMS Legacy Investigation Kit", "2.2.2", "codex plugin add", "$sms-kit init <APP_ID>"),
+        "README.md": ("SMS Legacy Investigation Kit", "codex plugin add", "$sms-kit init <APP_ID>"),
         "docs/first-access-mdb-investigation.md": ("local Access MDB workspace", "--adopt-existing", "Graphify", "Phase 1"),
         "LICENSE": ("Apache License", "Version 2.0, January 2004"),
         "NOTICE": ("Copyright 2026 Vo Ta Tuan", "vo-ta-tuan@anrakutei.vn"),
@@ -236,8 +241,8 @@ def main() -> int:
 
     plugin_manifest = load_json(root / ".codex-plugin/plugin.json", errors)
     if isinstance(plugin_manifest, dict):
-        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != "2.2.2":
-            errors.append("Plugin manifest must identify sms-kit version 2.2.2")
+        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != expected_version:
+            errors.append(f"Plugin manifest must identify sms-kit version {expected_version}")
         if plugin_manifest.get("skills") != "./skills/":
             errors.append("Plugin manifest must expose ./skills/")
     marketplace = load_json(repository_root / ".agents/plugins/marketplace.json", errors)
