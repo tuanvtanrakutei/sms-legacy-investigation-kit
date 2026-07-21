@@ -220,6 +220,36 @@ def test_extract_access_reports_runtime_block(tmp_path: Path) -> None:
     assert skipped_runtime["runtime_tested"] is False
 
 
+def test_preflight_input_preconditions(tmp_path: Path) -> None:
+    run_script(
+        "init_app.py",
+        "--root", str(tmp_path),
+        "--app-id", "T24",
+        "--name-en", "Preconditions Test",
+        "--runtime", "generic",
+    )
+    app = tmp_path / "T24"
+    manifest = app / "manifest.yaml"
+
+    empty = json.loads(run_script("preflight.py", "--package", str(PACKAGE), "--manifest", str(manifest)).stdout)
+    precond = empty["input_preconditions"]
+    assert precond["mode"] == "none"
+    assert set(precond["recommended_missing"]) == {"sources/vba", "sources/sql"}
+
+    (app / "sources" / "vba" / "Form1.bas").write_text('Attribute VB_Name = "Form1"\n', encoding="utf-8")
+    (app / "sources" / "sql" / "schema.sql").write_text("CREATE TABLE t(id int);\n", encoding="utf-8")
+    exported = json.loads(run_script("preflight.py", "--package", str(PACKAGE), "--manifest", str(manifest)).stdout)
+    assert exported["input_preconditions"]["mode"] == "export"
+    assert exported["input_preconditions"]["recommended_missing"] == []
+
+    access_db = app / "sources" / "access" / "T24.accdb"
+    access_db.write_text("synthetic placeholder", encoding="utf-8")
+    extract = json.loads(run_script("preflight.py", "--package", str(PACKAGE), "--manifest", str(manifest)).stdout)
+    # VBA/SQL exports already present, so an unextracted Access binary makes it mixed.
+    assert extract["input_preconditions"]["mode"] == "mixed"
+    assert "runtime_status" in extract["input_preconditions"]
+
+
 def test_adopt_existing_workspace_preserves_files(tmp_path: Path) -> None:
     app = tmp_path / "T23"
     original = app / "docs" / "scope.md"

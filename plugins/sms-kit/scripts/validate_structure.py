@@ -13,6 +13,7 @@ REQUIRED_FILES = (
     "requirements-dev.txt", ".codex-plugin/plugin.json", "skills/sms-kit/SKILL.md", "skills/sms-kit/agents/openai.yaml", "adapters/adapter-map.json",
     "specifications/package.json", "specifications/runtime-capabilities.yaml", "specifications/language-support.yaml",
     "specifications/senior-system-analyst-instruction.md", "specifications/evidence-policy.yaml", "specifications/output-contract.yaml",
+    "specifications/input-preconditions.md",
     "schemas/manifest.schema.json", "schemas/evidence.schema.json", "schemas/traceability-row.schema.json", "schemas/task.schema.json",
     "schemas/handoff.schema.json", "schemas/conflict.schema.json", "schemas/run-state.schema.json", "schemas/source-inventory.schema.json",
     "schemas/access-extraction.schema.json", "schemas/component-index.schema.json", "schemas/module-tree.schema.json",
