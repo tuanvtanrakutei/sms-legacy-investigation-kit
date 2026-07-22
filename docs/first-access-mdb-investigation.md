@@ -8,7 +8,7 @@ The goal is to create an evidence-backed investigation workspace without alterin
 
 Confirm all of the following:
 
-- `sms-kit` version 2.5.1 or later is installed in Codex.
+- `ak` version 2.5.2 or later is installed in Codex.
 - The application workspace already exists and may contain documents or exported code.
 - You have a copyable Access database file. Never provide the production/original MDB for extraction.
 - You know whether the app is local-only or has linked tables. If unknown, record it as an open question.
@@ -21,7 +21,7 @@ Do not start the application just to perform this setup. A dry run and app adopt
 In Codex, send this agent request and replace the placeholders:
 
 ```text
-Use $sms-kit to adopt the existing workspace <APP_ROOT>.
+Use $ak to adopt the existing workspace <APP_ROOT>.
 App ID: <APP_ID>.
 English name: <APP_NAME>.
 Preserve all current files, especially docs.
@@ -31,7 +31,7 @@ Do not analyze, extract, or access the MDB yet.
 For a non-empty workspace, the agent must use the explicit adoption mode equivalent to:
 
 ```powershell
-py -3.11 plugins\sms-kit\scripts\sms_kit.py init `
+py -3.11 plugins\ak\scripts\ak.py init `
   --app-root <APP_ROOT> `
   --app-id <APP_ID> `
   --name-en "<APP_NAME>" `
@@ -59,7 +59,7 @@ Never commit Access databases, credentials, customer documents, raw extraction s
 Ask the agent to update and review the manifest:
 
 ```text
-Use $sms-kit to configure <APP_ID> for a local-only, <BITNESS> Microsoft Access MDB application.
+Use $ak to configure <APP_ID> for a local-only, <BITNESS> Microsoft Access MDB application.
 The copied database is at sources/access/<database-copy>.mdb.
 SQL Server is not applicable for this app.
 Keep the existing documents as authorized business-document sources.
@@ -73,7 +73,7 @@ The manifest should identify the Access database source, runtime bitness, known 
 First ask for a non-mutating review:
 
 ```text
-$sms-kit assess <APP_ID>
+$ak assess <APP_ID>
 ```
 
 The assessment should report source coverage, missing information, extraction capability, and approvals required. It is not a phase analysis.
@@ -118,13 +118,13 @@ The graph is stored per app, normally in `<APP_ROOT>/graphify-out/`. It helps na
 Review each phase before moving to the next:
 
 ```text
-$sms-kit phase 1 <APP_ID>
+$ak phase 1 <APP_ID>
 ```
 
 Continue only after review:
 
 ```text
-$sms-kit phase 2 <APP_ID>
+$ak phase 2 <APP_ID>
 ```
 
 Repeat through Phase 6. The required order is:
@@ -136,14 +136,14 @@ Repeat through Phase 6. The required order is:
 5. Phase 5 — Document Integration
 6. Phase 6 — Synthesis
 
-Use `$sms-kit run <APP_ID>` only when you explicitly authorize the entire six-phase investigation. It never grants authorization to access a live database.
+Use `$ak run <APP_ID>` only when you explicitly authorize the entire six-phase investigation. It never grants authorization to access a live database.
 
 ## 8. Render the final deliverables
 
 After Phase 6, traceability checks, decisions, and independent QA pass, request the declared output language:
 
 ```text
-$sms-kit render <APP_ID> English
+$ak render <APP_ID> English
 ```
 
 Expected deliverables include the Phase documents, E2E Trace, Boundary Map, question list, QA report, and presentation inputs. Rendering a final presentation is gated; it is not a substitute for evidence review.

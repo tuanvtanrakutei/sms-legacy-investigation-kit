@@ -20,9 +20,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 # Files that carry the semantic version, with the exact surrounding text so
 # replacement never touches an unrelated field (e.g. "contract_version").
 JSON_MANIFESTS = [
-    "plugins/sms-kit/specifications/package.json",
-    "plugins/sms-kit/.codex-plugin/plugin.json",
-    "plugins/sms-kit/.claude-plugin/plugin.json",
+    "plugins/ak/specifications/package.json",
+    "plugins/ak/.codex-plugin/plugin.json",
+    "plugins/ak/.claude-plugin/plugin.json",
     ".claude-plugin/marketplace.json",  # two occurrences: metadata + plugin
 ]
 DOCS = [
@@ -34,7 +34,7 @@ CURRENT_VERSION = re.compile(r'"version"\s*:\s*"([^"]+)"')
 
 
 def read_current_version() -> str:
-    text = (REPO_ROOT / "plugins/sms-kit/specifications/package.json").read_text(
+    text = (REPO_ROOT / "plugins/ak/specifications/package.json").read_text(
         encoding="utf-8"
     )
     match = CURRENT_VERSION.search(text)
@@ -99,7 +99,7 @@ def main() -> int:
             f"  git commit -am 'release {new}'\n"
             f"  git tag v{new} && git push && git push --tags\n"
             "  Then create a GitHub Release for the tag so the README badge updates.\n"
-            "  Note: the 'V2.x' heading in skills/sms-kit/SKILL.md is brand text; "
+            "  Note: the 'V2.x' heading in skills/ak/SKILL.md is brand text; "
             "update it by hand only on a major/minor change."
         )
     return 0

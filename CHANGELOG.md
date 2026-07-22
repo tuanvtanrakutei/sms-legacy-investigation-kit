@@ -10,8 +10,8 @@
 
 ## 2.2.0 - 2026-07-16
 
-- Package the kit as the installable `sms-kit` Codex plugin and publish the `sms-legacy-kit` marketplace catalog.
-- Move implementation resources beneath `plugins/sms-kit` so a plugin installation is self-contained.
+- Package the kit as the installable `ak` Codex plugin and publish the `access-modernization-kit` marketplace catalog.
+- Move implementation resources beneath `plugins/ak` so a plugin installation is self-contained.
 - Simplify the public README to the user journey: install, initialize one app, and ask an agent.
 
 All notable changes to this project are documented in this file. The format follows Keep a Changelog principles and versions use semantic versioning.
@@ -22,6 +22,12 @@ All notable changes to this project are documented in this file. The format foll
 
 - ADP extraction validation on a compatible legacy Access environment.
 - A01 regression trial only after explicit authorization.
+
+## [2.5.2] - 2026-07-21
+
+### Changed
+
+- Renamed the project to **Access Modernization Kit**. The repository/package is `access-modernization-kit`, the plugin and CLI are `ak` (commands are `$ak ...`, the package lives under `plugins/ak/`, the CLI is `scripts/ak.py`), and the marketplace catalog is `access-modernization-kit`. Install with `codex plugin add ak@access-modernization-kit` (Codex) or `/plugin install ak@access-modernization-kit` (Claude Code). This is a rename only — the six-phase contract, schemas, and outputs are unchanged. References to the actual legacy "SMS" system under investigation are unchanged.
 
 ## [2.5.1] - 2026-07-21
 
@@ -83,7 +89,7 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Added
 
-- Added the user-facing `sms_kit.py` CLI for package validation, app-workspace initialization, and capability preflight.
+- Added the user-facing `ak.py` CLI for package validation, app-workspace initialization, and capability preflight.
 
 ### Changed
 
@@ -93,7 +99,7 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
-- Renamed the Codex/Claude skill identifier from `$sms-legacy-investigation-kit` to the shorter `$sms-kit`; the repository and package name remain unchanged.
+- Renamed the Codex/Claude skill identifier from `$access-modernization-kit` to the shorter `$ak`; the repository and package name remain unchanged.
 
 ## [2.1.7] - 2026-07-16
 
@@ -105,7 +111,7 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Added
 
-- Added `sms_kit.py install` and the matching `$sms-kit install` agent commands for Codex and Claude skill discovery.
+- Added `ak.py install` and the matching `$ak install` agent commands for Codex and Claude skill discovery.
 
 ## [2.1.4] - 2026-07-16
 

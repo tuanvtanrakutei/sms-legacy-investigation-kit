@@ -4,9 +4,9 @@ The root `SKILL.md` and bundled contracts are canonical. Agent-specific metadata
 
 | Runtime | Discovery location | Adapter behavior |
 |---|---|---|
-| Codex | `%USERPROFILE%\.codex\skills\sms-kit` | Copy or link the complete package; `agents/openai.yaml` supplies UI metadata. |
-| Claude | Project or user skill directory supported by the active Claude runtime, using `sms-kit` as the skill directory | Copy or link the complete package and use the root `SKILL.md`. |
-| Generic agent | Any readable tools/skills directory, using `sms-kit` as the skill directory | Point the agent to the root `SKILL.md` and preserve relative resource paths. |
+| Codex | `%USERPROFILE%\.codex\skills\ak` | Copy or link the complete package; `agents/openai.yaml` supplies UI metadata. |
+| Claude | Project or user skill directory supported by the active Claude runtime, using `ak` as the skill directory | Copy or link the complete package and use the root `SKILL.md`. |
+| Generic agent | Any readable tools/skills directory, using `ak` as the skill directory | Point the agent to the root `SKILL.md` and preserve relative resource paths. |
 
 Do not maintain separate copies of the canonical instruction. Prefer a directory link when the runtime supports it; otherwise copy the whole package and record its source version.
 

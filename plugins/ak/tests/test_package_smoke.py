@@ -68,32 +68,32 @@ def test_public_yaml_has_unique_keys() -> None:
 
 
 def test_friendly_cli_entrypoint(tmp_path: Path) -> None:
-    run_script("sms_kit.py", "validate")
+    run_script("ak.py", "validate")
     run_script(
-        "sms_kit.py", "install",
+        "ak.py", "install",
         "--runtime", "generic",
-        "--destination", str(tmp_path / "sms-kit"),
+        "--destination", str(tmp_path / "ak"),
         "--dry-run",
     )
     run_script(
-        "sms_kit.py", "install",
+        "ak.py", "install",
         "--runtime", "claude",
         "--project", str(tmp_path / "claude-project"),
         "--dry-run",
     )
     claude_project = tmp_path / "claude-project"
-    run_script("sms_kit.py", "install", "--runtime", "claude", "--project", str(claude_project))
-    assert (claude_project / ".claude" / "sms-kit-runtime").resolve() == PACKAGE.resolve()
-    assert (claude_project / ".claude" / "skills" / "sms-kit").resolve() == (PACKAGE / "skills" / "sms-kit").resolve()
+    run_script("ak.py", "install", "--runtime", "claude", "--project", str(claude_project))
+    assert (claude_project / ".claude" / "ak-runtime").resolve() == PACKAGE.resolve()
+    assert (claude_project / ".claude" / "skills" / "ak").resolve() == (PACKAGE / "skills" / "ak").resolve()
     run_script(
-        "sms_kit.py", "init",
+        "ak.py", "init",
         "--root", str(tmp_path),
         "--app-id", "T22",
         "--name-en", "Friendly CLI Test",
     )
     app = tmp_path / "T22"
     assert (app / "manifest.yaml").is_file()
-    run_script("sms_kit.py", "preflight", "--app-root", str(app))
+    run_script("ak.py", "preflight", "--app-root", str(app))
 
 
 def test_synthetic_module_aware_pipeline(tmp_path: Path) -> None:
@@ -345,7 +345,7 @@ def test_adopt_existing_workspace_preserves_files(tmp_path: Path) -> None:
     refused = subprocess.run(
         [
             sys.executable,
-            str(SCRIPTS / "sms_kit.py"),
+            str(SCRIPTS / "ak.py"),
             "init",
             "--app-root", str(app),
             "--app-id", "T23",
@@ -360,7 +360,7 @@ def test_adopt_existing_workspace_preserves_files(tmp_path: Path) -> None:
     assert not (app / "manifest.yaml").exists()
 
     run_script(
-        "sms_kit.py",
+        "ak.py",
         "init",
         "--app-root", str(app),
         "--app-id", "T23",

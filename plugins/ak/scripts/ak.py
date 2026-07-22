@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Friendly entry point for the SMS Legacy Investigation Kit."""
+"""Friendly entry point for the Access Modernization Kit."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def run(script: str, *args: str) -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=__doc__,
-        epilog="For full investigation work, invoke the sms-kit agent skill.",
+        epilog="For full investigation work, invoke the ak agent skill.",
     )
     parser.add_argument("--version", action="version", version=package_version())
     commands = parser.add_subparsers(dest="command", required=True)
@@ -56,11 +56,11 @@ def parse_args() -> argparse.Namespace:
 
 def install_destination(args: argparse.Namespace) -> Path:
     if args.runtime == "codex":
-        return Path(os.environ.get("USERPROFILE", str(Path.home()))) / ".codex" / "skills" / "sms-kit"
+        return Path(os.environ.get("USERPROFILE", str(Path.home()))) / ".codex" / "skills" / "ak"
     if args.runtime == "claude":
         if not args.project:
             raise ValueError("--project is required for --runtime claude")
-        return Path(args.project).expanduser().resolve() / ".claude" / "skills" / "sms-kit"
+        return Path(args.project).expanduser().resolve() / ".claude" / "skills" / "ak"
     if not args.destination:
         raise ValueError("--destination is required for --runtime generic")
     return Path(args.destination).expanduser().resolve()
@@ -86,7 +86,7 @@ def create_directory_link(link: Path, target: Path) -> int:
 
 def install_skill(args: argparse.Namespace) -> int:
     if args.runtime == "codex":
-        print("sms-kit is installed for Codex through `codex plugin add sms-kit@sms-legacy-kit`.")
+        print("ak is installed for Codex through `codex plugin add ak@access-modernization-kit`.")
         print("Do not create a manual .codex/skills link.")
         return 0
     try:
@@ -96,8 +96,8 @@ def install_skill(args: argparse.Namespace) -> int:
         return 2
     source = PACKAGE.resolve()
     if args.runtime == "claude":
-        runtime_root = destination.parents[1] / "sms-kit-runtime"
-        skill_source = runtime_root / "skills" / "sms-kit"
+        runtime_root = destination.parents[1] / "ak-runtime"
+        skill_source = runtime_root / "skills" / "ak"
         if args.dry_run:
             print(f"Would install package runtime for Claude: {runtime_root} -> {source}")
             print(f"Would install Claude skill: {destination} -> {skill_source}")
@@ -111,23 +111,23 @@ def install_skill(args: argparse.Namespace) -> int:
             link.parent.mkdir(parents=True, exist_ok=True)
             if create_directory_link(link, target) != 0:
                 return 1
-        print(f"Installed sms-kit for Claude: {destination}")
+        print(f"Installed ak for Claude: {destination}")
         print("Restart or open a new Claude session so it discovers the skill.")
         return 0
-    source = PACKAGE / "skills" / "sms-kit"
+    source = PACKAGE / "skills" / "ak"
     if args.dry_run:
-        print(f"Would install sms-kit for {args.runtime}: {destination} -> {source}")
+        print(f"Would install ak for {args.runtime}: {destination} -> {source}")
         return 0
     if destination.exists():
         if destination.resolve() == source:
-            print(f"sms-kit is already installed for {args.runtime}: {destination}")
+            print(f"ak is already installed for {args.runtime}: {destination}")
             return 0
         print(f"ERROR: destination already exists and targets a different path: {destination}")
         return 2
     destination.parent.mkdir(parents=True, exist_ok=True)
     if create_directory_link(destination, source) != 0:
         return 1
-    print(f"Installed sms-kit for {args.runtime}: {destination}")
+    print(f"Installed ak for {args.runtime}: {destination}")
     print("Restart or open a new agent session so it discovers the skill.")
     return 0
 
