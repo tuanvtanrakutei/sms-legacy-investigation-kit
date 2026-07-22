@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 REQUIRED_FILES = (
-    "requirements-dev.txt", ".codex-plugin/plugin.json", "skills/sms-kit/SKILL.md", "skills/sms-kit/agents/openai.yaml", "adapters/adapter-map.json",
+    "requirements-dev.txt", ".codex-plugin/plugin.json", "skills/ak/SKILL.md", "skills/ak/agents/openai.yaml", "adapters/adapter-map.json",
     "specifications/package.json", "specifications/runtime-capabilities.yaml", "specifications/language-support.yaml",
     "specifications/senior-system-analyst-instruction.md", "specifications/evidence-policy.yaml", "specifications/output-contract.yaml",
     "specifications/input-preconditions.md",
@@ -28,7 +28,7 @@ REQUIRED_FILES = (
     "templates/conflict-record.json", "templates/worker-prompt.md", "templates/app.gitignore", "templates/app.graphifyignore", "templates/app.investigationignore",
     "scripts/init_app.py", "scripts/preflight.py", "scripts/create_run.py", "scripts/create_tasks.py", "scripts/extract_access.py",
     "scripts/extract_access.ps1", "scripts/access_runtime.py", "scripts/parse_compilation_database.py", "scripts/build_component_index.py", "scripts/build_module_plan.py", "scripts/validate_handoffs.py",
-    "scripts/merge_evidence.py", "scripts/advance_run.py", "scripts/sms_kit.py", "scripts/validate_structure.py",
+    "scripts/merge_evidence.py", "scripts/advance_run.py", "scripts/ak.py", "scripts/validate_structure.py",
     "tools/ExportAccessObjects.bas",
     "tests/test_package_smoke.py", "examples/minimal-app/README.md", "examples/minimal-app/manifest.yaml",
     "examples/minimal-app/.investigationignore", "examples/minimal-app/sources/vba/DemoOrderForm.bas", "examples/minimal-app/sources/sql/demo_orders.sql",
@@ -167,14 +167,14 @@ def main() -> int:
         if not path.is_file() or path.stat().st_size == 0:
             errors.append(f"Missing or empty repository file: {relative}")
 
-    skill_path = root / "skills/sms-kit/SKILL.md"
+    skill_path = root / "skills/ak/SKILL.md"
     if skill_path.is_file():
         skill = skill_path.read_text(encoding="utf-8")
-        if not skill.startswith("---\nname: sms-kit\n") or "description:" not in skill.split("---", 2)[1]:
+        if not skill.startswith("---\nname: ak\n") or "description:" not in skill.split("---", 2)[1]:
             errors.append("SKILL.md frontmatter is missing or incorrect")
         if len(skill.splitlines()) > 500:
             errors.append("SKILL.md exceeds 500 lines")
-        for phrase in ("multi-agent", "coordinator", "independent QA", "scripts/create_run.py", "Access extraction", "leaf-first", "CodeWiki is not a dependency", "$sms-kit help", "$sms-kit init <APP_ID>", "$sms-kit render <APP_ID> [LANGUAGE]"):
+        for phrase in ("multi-agent", "coordinator", "independent QA", "scripts/create_run.py", "Access extraction", "leaf-first", "CodeWiki is not a dependency", "$ak help", "$ak init <APP_ID>", "$ak render <APP_ID> [LANGUAGE]"):
             if phrase not in skill:
                 errors.append(f"SKILL.md missing V2.1 term: {phrase}")
         if "TODO" in skill:
@@ -194,12 +194,12 @@ def main() -> int:
             errors.append("CodeWiki reference must remain non-dependency and non-vendored")
 
     publication_checks = {
-        "README.md": ("SMS Legacy Investigation Kit", "codex plugin add", "$sms-kit init <APP_ID>"),
+        "README.md": ("Access Modernization Kit", "codex plugin add", "$ak init <APP_ID>"),
         "docs/first-access-mdb-investigation.md": ("local Access MDB workspace", "--adopt-existing", "Graphify", "Phase 1"),
         "LICENSE": ("Apache License", "Version 2.0, January 2004"),
         "NOTICE": ("Copyright 2026 Vo Ta Tuan", "vo-ta-tuan@anrakutei.vn"),
         "SECURITY.md": ("vo-ta-tuan@anrakutei.vn", "Do not open a public GitHub issue"),
-        ".github/workflows/validate.yml": ("pytest", "plugins/sms-kit"),
+        ".github/workflows/validate.yml": ("pytest", "plugins/ak"),
     }
     for relative, tokens in publication_checks.items():
         path = repository_root / relative
@@ -243,17 +243,17 @@ def main() -> int:
 
     plugin_manifest = load_json(root / ".codex-plugin/plugin.json", errors)
     if isinstance(plugin_manifest, dict):
-        if plugin_manifest.get("name") != "sms-kit" or plugin_manifest.get("version") != expected_version:
-            errors.append(f"Plugin manifest must identify sms-kit version {expected_version}")
+        if plugin_manifest.get("name") != "ak" or plugin_manifest.get("version") != expected_version:
+            errors.append(f"Plugin manifest must identify ak version {expected_version}")
         if plugin_manifest.get("skills") != "./skills/":
             errors.append("Plugin manifest must expose ./skills/")
     marketplace = load_json(repository_root / ".agents/plugins/marketplace.json", errors)
     if isinstance(marketplace, dict):
-        if marketplace.get("name") != "sms-legacy-kit":
-            errors.append("Marketplace name must be sms-legacy-kit")
+        if marketplace.get("name") != "access-modernization-kit":
+            errors.append("Marketplace name must be access-modernization-kit")
         entries = marketplace.get("plugins")
-        if not isinstance(entries, list) or not any(isinstance(entry, dict) and entry.get("name") == "sms-kit" and entry.get("source", {}).get("path") == "./plugins/sms-kit" for entry in entries):
-            errors.append("Marketplace must expose plugins/sms-kit")
+        if not isinstance(entries, list) or not any(isinstance(entry, dict) and entry.get("name") == "ak" and entry.get("source", {}).get("path") == "./plugins/ak" for entry in entries):
+            errors.append("Marketplace must expose plugins/ak")
 
     manifest_path = Path(args.manifest).expanduser().resolve() if args.manifest else root / "references/manifest.example.yaml"
     if not manifest_path.is_file():

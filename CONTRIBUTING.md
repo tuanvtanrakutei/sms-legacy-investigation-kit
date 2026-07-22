@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving the SMS Legacy Investigation Kit.
+Thank you for improving the Access Modernization Kit.
 
 ## Before opening a change
 
@@ -15,7 +15,7 @@ Thank you for improving the SMS Legacy Investigation Kit.
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r plugins/sms-kit/requirements-dev.txt
+python -m pip install -r plugins/ak/requirements-dev.txt
 ```
 
 ## Validation
@@ -24,17 +24,17 @@ Run before every pull request:
 
 ```powershell
 python -m compileall -q scripts
-python plugins/sms-kit/scripts/validate_structure.py --package plugins/sms-kit --repository-root .
+python plugins/ak/scripts/validate_structure.py --package plugins/ak --repository-root .
 python -m pytest -q
 ```
 
-If a change touches Access automation, also parse `plugins/sms-kit/scripts/extract_access.ps1` with PowerShell and report whether executable COM/DAO extraction was actually tested. Never imply that dry-run validation proves live extraction.
+If a change touches Access automation, also parse `plugins/ak/scripts/extract_access.ps1` with PowerShell and report whether executable COM/DAO extraction was actually tested. Never imply that dry-run validation proves live extraction.
 
 ## Change rules
 
 - Update schemas, examples, scripts, references, and validators together when changing a contract.
-- Update `plugins/sms-kit/specifications/package.json` and `CHANGELOG.md` for a release-worthy change.
-- Keep `plugins/sms-kit/skills/sms-kit/SKILL.md` under 500 lines and move detailed conditional guidance to `plugins/sms-kit/references/`.
+- Update `plugins/ak/specifications/package.json` and `CHANGELOG.md` for a release-worthy change.
+- Keep `plugins/ak/skills/ak/SKILL.md` under 500 lines and move detailed conditional guidance to `plugins/ak/references/`.
 - Use source-backed evidence for legacy-system behavior and label assumptions clearly.
 - Preserve backward compatibility when practical; document deliberate breaks.
 

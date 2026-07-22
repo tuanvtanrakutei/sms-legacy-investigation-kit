@@ -1,9 +1,9 @@
 ---
-name: sms-kit
+name: ak
 description: Analyze Microsoft Access VBA applications and MDB/ACCDB/ADP projects connected to SQL Server through a mandatory six-phase, evidence-backed legacy-system investigation with Access extraction, deterministic module planning, and provider-neutral multi-agent orchestration. Use when an agent must package, initialize, analyze, review, or continue investigation of an SMS A-series satellite app and produce Phase documents, E2E traces, boundary maps, question lists, QA, or presentation inputs.
 ---
 
-# SMS Legacy Investigation Kit V2.2
+# Access Modernization Kit V2.2
 
 Use one shared investigation method while keeping every app's sources, graph, decisions, sessions, and outputs isolated.
 
@@ -15,15 +15,15 @@ Treat these short forms as explicit user requests. They are agent commands, not 
 
 | User input | Required action |
 |---|---|
-| `$sms-kit help` | Return the command guide below and do not modify an app workspace. |
-| `$sms-kit install codex` | Explain that `$sms-kit` is already installed as a Codex plugin; do not create a manual skill link. |
-| `$sms-kit install claude <PROJECT_PATH>` | Run `scripts/sms_kit.py install --runtime claude --project <PROJECT_PATH>`; report the discovery path and restart requirement. |
-| `$sms-kit init <APP_ID>` | Use app initialization mode. For a non-empty existing project root, require explicit adoption with scripts/sms_kit.py init --app-root <APP_ROOT> --adopt-existing; preserve existing files, then stop. |
-| `$sms-kit assess <APP_ID>` | Inspect the manifest and authorized source inventory; report coverage, gaps, and required approvals without analyzing a phase. |
-| `$sms-kit phase <1-6> <APP_ID>` | Run only the named phase after reading its required contract/template and available evidence. |
-| `$sms-kit run <APP_ID>` | Run the six phases in order only when the user explicitly authorizes the full investigation. |
-| `$sms-kit status <APP_ID>` | Report app/run/phase/QA status without changing evidence or outputs. |
-| `$sms-kit render <APP_ID> [LANGUAGE]` | Render declared outputs only after the required Phase 6, traceability, and QA gates pass. |
+| `$ak help` | Return the command guide below and do not modify an app workspace. |
+| `$ak install codex` | Explain that `$ak` is already installed as a Codex plugin; do not create a manual skill link. |
+| `$ak install claude <PROJECT_PATH>` | Run `scripts/ak.py install --runtime claude --project <PROJECT_PATH>`; report the discovery path and restart requirement. |
+| `$ak init <APP_ID>` | Use app initialization mode. For a non-empty existing project root, require explicit adoption with scripts/ak.py init --app-root <APP_ROOT> --adopt-existing; preserve existing files, then stop. |
+| `$ak assess <APP_ID>` | Inspect the manifest and authorized source inventory; report coverage, gaps, and required approvals without analyzing a phase. |
+| `$ak phase <1-6> <APP_ID>` | Run only the named phase after reading its required contract/template and available evidence. |
+| `$ak run <APP_ID>` | Run the six phases in order only when the user explicitly authorizes the full investigation. |
+| `$ak status <APP_ID>` | Report app/run/phase/QA status without changing evidence or outputs. |
+| `$ak render <APP_ID> [LANGUAGE]` | Render declared outputs only after the required Phase 6, traceability, and QA gates pass. |
 
 Accept the equivalent Vietnamese or plain-language request. If an app ID is omitted, ask for it before any app-specific action. Never interpret `run` as approval for live Access/ADP or SQL Server access; require that approval separately.
 

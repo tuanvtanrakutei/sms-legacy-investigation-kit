@@ -1,14 +1,14 @@
 {
-  "name": "sms-legacy-kit",
+  "name": "access-modernization-kit",
   "interface": {
-    "displayName": "SMS Legacy Investigation Kit"
+    "displayName": "Access Modernization Kit"
   },
   "plugins": [
     {
-      "name": "sms-kit",
+      "name": "ak",
       "source": {
         "source": "local",
-        "path": "./plugins/sms-kit"
+        "path": "./plugins/ak"
       },
       "policy": {
         "installation": "AVAILABLE",

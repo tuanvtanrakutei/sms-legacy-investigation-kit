@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory: "/plugins/sms-kit"
+    directory: "/plugins/ak"
     schedule:
       interval: "weekly"
     labels: ["dependencies"]

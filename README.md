@@ -1,7 +1,7 @@
-# SMS Legacy Investigation Kit
+# Access Modernization Kit
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/tuanvtanrakutei/sms-legacy-investigation-kit?color=green&label=release)](https://github.com/tuanvtanrakutei/sms-legacy-investigation-kit/releases/latest)
+[![Release](https://img.shields.io/github/v/release/tuanvtanrakutei/access-modernization-kit?color=green&label=release)](https://github.com/tuanvtanrakutei/access-modernization-kit/releases/latest)
 
 An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server application, one app at a time. It turns authorized source material into the six analyst phases, evidence, E2E Trace, Boundary Map, QA report, and presentation inputs.
 
@@ -10,19 +10,19 @@ An agent skill for investigating a legacy Microsoft Access/VBA and SQL Server ap
 You do **not** need to clone this repository or create a link in an agent folder. Add the public marketplace once, then install the plugin:
 
 ```powershell
-codex plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit --sparse .agents/plugins --sparse plugins/sms-kit
-codex plugin add sms-kit@sms-legacy-kit
+codex plugin marketplace add tuanvtanrakutei/access-modernization-kit --sparse .agents/plugins --sparse plugins/ak
+codex plugin add ak@access-modernization-kit
 ```
 
-Start a new Codex conversation after installation. Codex manages the installed plugin location and discovers `$sms-kit` automatically.
+Start a new Codex conversation after installation. Codex manages the installed plugin location and discovers `$ak` automatically.
 
-> To pin a specific release instead of the latest, add `--ref vX.Y.Z` to the marketplace command (for example `--ref v2.3.0`). See the [releases page](https://github.com/tuanvtanrakutei/sms-legacy-investigation-kit/releases).
+> To pin a specific release instead of the latest, add `--ref vX.Y.Z` to the marketplace command (for example `--ref v2.3.0`). See the [releases page](https://github.com/tuanvtanrakutei/access-modernization-kit/releases).
 
 To update later:
 
 ```powershell
-codex plugin marketplace upgrade sms-legacy-kit
-codex plugin add sms-kit@sms-legacy-kit
+codex plugin marketplace upgrade access-modernization-kit
+codex plugin add ak@access-modernization-kit
 ```
 
 ## Install in Claude Code
@@ -30,29 +30,29 @@ codex plugin add sms-kit@sms-legacy-kit
 You do **not** need to clone this repository. Add the marketplace once, then install the plugin:
 
 ```text
-/plugin marketplace add tuanvtanrakutei/sms-legacy-investigation-kit
-/plugin install sms-kit@sms-legacy-kit
+/plugin marketplace add tuanvtanrakutei/access-modernization-kit
+/plugin install ak@access-modernization-kit
 ```
 
-Restart the session after installation. Claude Code discovers the `sms-kit` skill automatically. To update later, run `/plugin marketplace update sms-legacy-kit` and reinstall.
+Restart the session after installation. Claude Code discovers the `ak` skill automatically. To update later, run `/plugin marketplace update access-modernization-kit` and reinstall.
 
 ## Use it with an agent
 
-In Codex, select **SMS Legacy Investigation Kit** from `/skills`, or include `$sms-kit` in your request. These are agent messages, not PowerShell commands.
+In Codex, select **Access Modernization Kit** from `/skills`, or include `$ak` in your request. These are agent messages, not PowerShell commands.
 
 | Goal | Say this to the agent |
 |---|---|
-| Create an empty workspace | `$sms-kit init <APP_ID>` |
-| Check sources and missing inputs | `$sms-kit assess <APP_ID>` |
-| Run a specific phase | `$sms-kit phase 1 <APP_ID>` |
-| Run the six phases | `$sms-kit run <APP_ID>` |
-| View progress only | `$sms-kit status <APP_ID>` |
-| Produce final approved outputs | `$sms-kit render <APP_ID> English` |
+| Create an empty workspace | `$ak init <APP_ID>` |
+| Check sources and missing inputs | `$ak assess <APP_ID>` |
+| Run a specific phase | `$ak phase 1 <APP_ID>` |
+| Run the six phases | `$ak run <APP_ID>` |
+| View progress only | `$ak status <APP_ID>` |
+| Produce final approved outputs | `$ak render <APP_ID> English` |
 
 Example:
 
 ```text
-Use $sms-kit to investigate <APP_ID> from the authorized sources.
+Use $ak to investigate <APP_ID> from the authorized sources.
 Run the six phases and produce English Phase documents, an E2E Trace,
 a Boundary Map, a QA report, and presentation inputs.
 ```
@@ -61,10 +61,10 @@ a Boundary Map, a QA report, and presentation inputs.
 
 ## Set up one app workspace
 
-For a new empty folder, ask the agent for `$sms-kit init <APP_ID>`. For an existing app project, explicitly ask it to adopt <APP_ROOT> without changing current files. The optional CLI is:
+For a new empty folder, ask the agent for `$ak init <APP_ID>`. For an existing app project, explicitly ask it to adopt <APP_ROOT> without changing current files. The optional CLI is:
 
 ```powershell
-py -3.11 plugins\sms-kit\scripts\sms_kit.py init `
+py -3.11 plugins\ak\scripts\ak.py init `
   --root <WORKSPACE_ROOT> `
   --app-id <APP_ID> `
   --name-en "<APP_NAME>"
@@ -105,7 +105,7 @@ Plus traceable evidence, a question list, QA report, E2E Trace, Boundary Map, an
 For Claude Code, prefer the marketplace install above. For another compatible runtime (or a project-scoped manual link without a marketplace), first obtain the package (clone/download or use its local plugin cache), then ask an agent to run:
 
 ```text
-$sms-kit install claude <PROJECT_PATH>
+$ak install claude <PROJECT_PATH>
 ```
 
 That creates the project-scoped Claude skill link. The six-phase contract and outputs stay the same.
@@ -116,11 +116,11 @@ That creates the project-scoped Claude skill link. The six-phase contract and ou
 The CLI is for local setup and package checks, not normal investigation work:
 
 ```powershell
-py -3.11 plugins\sms-kit\scripts\sms_kit.py validate
-py -3.11 plugins\sms-kit\scripts\sms_kit.py preflight --app-root <APP_WORKSPACE>
+py -3.11 plugins\ak\scripts\ak.py validate
+py -3.11 plugins\ak\scripts\ak.py preflight --app-root <APP_WORKSPACE>
 ```
 
-The kit supports controlled Access extraction, `pyodbc`/Microsoft SQL Server ODBC access when explicitly authorized, Graphify-assisted discovery, optional compilation-database context, and provider-neutral multi-agent processing. It does not include CodeWiki as a dependency. Read the installed skill or the package files under `plugins/sms-kit/` only when maintaining the kit.
+The kit supports controlled Access extraction, `pyodbc`/Microsoft SQL Server ODBC access when explicitly authorized, Graphify-assisted discovery, optional compilation-database context, and provider-neutral multi-agent processing. It does not include CodeWiki as a dependency. Read the installed skill or the package files under `plugins/ak/` only when maintaining the kit.
 </details>
 
 ## Safety

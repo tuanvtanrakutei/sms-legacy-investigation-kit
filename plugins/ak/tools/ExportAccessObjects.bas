@@ -3,7 +3,7 @@ Option Compare Database
 Option Explicit
 
 ' =============================================================================
-' SMS Legacy Investigation Kit - manual Access export
+' Access Modernization Kit - manual Access export
 ' =============================================================================
 ' Export every Access object to text from INSIDE Access, without external COM
 ' automation and without administrator elevation. Use this when the runtime

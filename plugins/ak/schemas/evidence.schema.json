@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sms.local/schemas/evidence.schema.json",
-  "title": "SMS Legacy Investigation Evidence Register",
+  "title": "Access Modernization Evidence Register",
   "type": "object",
   "required": ["app_id", "generated_at", "items"],
   "properties": {
